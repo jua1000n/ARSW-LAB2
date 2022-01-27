@@ -18,12 +18,14 @@ public class PrimeFinderThread extends Thread {
     private long time;
 	
 	private List<Integer> primes;
+	List<Integer> objet;
 	
-	public PrimeFinderThread(int a, int b) {
+	public PrimeFinderThread(int a, int b, List<Integer> objet) {
 		super();
-                this.primes = new LinkedList<>();
+		this.primes = new LinkedList<>();
 		this.a = a;
 		this.b = b;
+		this.objet= objet;
 		time = System.currentTimeMillis();
 	}
 
@@ -58,14 +60,13 @@ public class PrimeFinderThread extends Thread {
 	}
 
     private void primeFinder() throws InterruptedException {
-        synchronized (primes) {
+        synchronized (objet) {
 			System.out.println("numero de primos"+ primes.size());
-        	primes.wait();
+			objet.wait();
         }
     }
 
 	public List<Integer> getPrimes() {
 		return primes;
 	}
-	
 }
