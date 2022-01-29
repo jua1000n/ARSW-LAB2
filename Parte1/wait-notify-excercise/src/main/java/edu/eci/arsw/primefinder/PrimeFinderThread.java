@@ -14,8 +14,9 @@ public class PrimeFinderThread extends Thread {
 
 	
 	int a,b;
-    private int timeStop = 100;
+    private int timeStop = 10000;
     private long time;
+	private boolean selec = true;
 	
 	private List<Integer> primes;
 	List<Integer> objet;
@@ -26,21 +27,25 @@ public class PrimeFinderThread extends Thread {
 		this.a = a;
 		this.b = b;
 		this.objet= objet;
-		time = System.currentTimeMillis();
 	}
 
         @Override
 	public void run(){
 	    for (int i= a;i < b;i++){
+			if(selec) {
+				time = System.currentTimeMillis();
+				selec = false;
+			}
+			try {
+				if ((System.currentTimeMillis() - time) >= timeStop) {
+					primeFinder();
+					selec = true;
+				}
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 	        if (isPrime(i)){
 	            primes.add(i);
-	            try {
-	                if ((System.currentTimeMillis() - time) >= timeStop) {
-                        primeFinder();
-                    }
-	            } catch (InterruptedException e) {
-	                e.printStackTrace();
-	            }
 	            System.out.println(i);
 	        }
 	    }
@@ -61,12 +66,20 @@ public class PrimeFinderThread extends Thread {
 
     private void primeFinder() throws InterruptedException {
         synchronized (objet) {
-			System.out.println("numero de primos"+ primes.size());
+			System.out.println("numero de primos: "+ primes.size());
 			objet.wait();
         }
     }
 
 	public List<Integer> getPrimes() {
 		return primes;
+	}
+
+	public List<Integer> getObjet() {
+		return objet;
+	}
+
+	public void setObjet(List<Integer> objet) {
+		this.objet = objet;
 	}
 }
