@@ -1,6 +1,7 @@
 package snakepackage;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Observable;
 import java.util.Random;
 
@@ -13,7 +14,7 @@ public class Snake extends Observable implements Runnable {
     private Cell head;
     private Cell newCell;
     private LinkedList<Cell> snakeBody = new LinkedList<Cell>();
-    //private Cell objective = null;
+    private List<Integer> estate;
     private Cell start = null;
 
     private boolean snakeEnd = false;
@@ -26,9 +27,11 @@ public class Snake extends Observable implements Runnable {
     private boolean isSelected = false;
     private int growing = 0;
     public boolean goal = false;
+    public boolean estatePause = false;
 
-    public Snake(int idt, Cell head, int direction) {
+    public Snake(int idt, Cell head, int direction, List<Integer> estate) {
         this.idt = idt;
+        this.estate = estate;
         this.direction = direction;
         generateSnake(head);
 
@@ -48,18 +51,25 @@ public class Snake extends Observable implements Runnable {
     @Override
     public void run() {
         while (!snakeEnd) {
-            
+            try {
+                snakes();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
             snakeCalc();
 
             //NOTIFY CHANGES TO GUI
             setChanged();
             notifyObservers();
 
+            int x = 100;
+
             try {
                 if (hasTurbo == true) {
-                    Thread.sleep(500 / 3);
+                    Thread.sleep(x / 3);
                 } else {
-                    Thread.sleep(500);
+                    Thread.sleep(x);
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -69,7 +79,22 @@ public class Snake extends Observable implements Runnable {
         
         fixDirection(head);
         
-        
+    }
+
+    public void pause() {
+        try {
+            snakes();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void snakes() throws InterruptedException {
+        synchronized (estate) {
+            if (estatePause) {
+                estate.wait();
+            }
+        }
     }
 
     private void snakeCalc() {
@@ -343,4 +368,11 @@ public class Snake extends Observable implements Runnable {
         return idt;
     }
 
+    public boolean isEstatePause() {return estatePause;}
+
+    public void setEstatePause(boolean estatePause) {this.estatePause = estatePause;}
+
+    public LinkedList<Cell> getSnakeBody() {
+        return snakeBody;
+    }
 }

@@ -1,0 +1,17 @@
+2.
+    - Posibles condiciones de carrera.
+    Una condición de carrera se puede ver es en el método init, debido a que en esta se encuentra una zona donde
+    se está haciendo una consulta y aumento a una variable de tipo entero que esta asociada a la consulta de hilos
+    esto provoca que esta variable no tenga el soporte para esto.
+
+    -Uso inadecuado de colecciones, considerando su manejo concurrente (para esto, aumente la velocidad del juego y ejecútelo varias veces hasta que se genere un error).
+    En este caso empieza a reventar se la linkedlist, debido a que está iterando la lista, y esta se está modificando, por la manera que esta
+    implementado hace que se genere la excepción de ConcurrentModificationException.
+
+    -Uso innecesario de esperas activas.
+    Cuando realice la prueba rápida del juego al finalizar alguna serpiente terminan en timed_waiting, debes de terminar en terminated.
+
+3.
+    Para solucionar esto, convertiria esta variable de tipo int a una atomica que sea capas de soportar los hilos.
+
+
